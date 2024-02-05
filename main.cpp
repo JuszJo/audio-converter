@@ -28,11 +28,25 @@ int main() {
     mp3File.read(lessBytes, lessByteSize);
     lessBytes[lessByteSize] = '\0';
 
+    // WAV
+    const int wavByteSize = 4;
+    char wavBytes[wavByteSize + 1];
+    mp3File.read(wavBytes, wavByteSize);
+    wavBytes[wavByteSize] = '\0';
+
+    // FMT
+    const int fmtByteSize = 4;
+    char fmtBytes[fmtByteSize + 1];
+    mp3File.read(fmtBytes, fmtByteSize);
+    fmtBytes[fmtByteSize] = '\0';
+
      // Close the file
     mp3File.close();
 
-    std::cout << "RIFF Byte: " << riffBytes << std::endl;
-    std::cout << "LESS Byte: " << lessBytes << std::endl;
+    std::cout << "RIFF Bytes: " << riffBytes << std::endl;
+    std::cout << "LESS Bytes: " << lessBytes << std::endl;
+    std::cout << "WAV Bytes: " << wavBytes << std::endl;
+    std::cout << "FMT Bytes: " << fmtBytes << std::endl;
 
     return 1;
 }
