@@ -87,6 +87,12 @@ int main() {
     mp3File.read(channelsBytes, channelsByteSize);
     int channelValue = LittleEndian::byteToInteger(channelsBytes, channelsByteSize);
 
+    // Sample Frequency (Hertz)
+    const int sampleFreqByteSize = 4;
+    char sampleFreqBytes[sampleFreqByteSize];
+    mp3File.read(sampleFreqBytes, sampleFreqByteSize);
+    int sampleFreq = LittleEndian::byteToInteger(sampleFreqBytes, sampleFreqByteSize);
+
     // Close the file
     mp3File.close();
 
@@ -97,6 +103,7 @@ int main() {
     std::cout << "WAV Section Chunk Bytes: " << wavSectionValue << std::endl;
     std::cout << "WAV Type Format Bytes: " << wavTypeFormatValue << std::endl;
     std::cout << "Channel Value: " << channelValue << std::endl;
+    std::cout << "Sample Frequency Value: " << sampleFreq << std::endl;
 
     return 1;
 }
