@@ -61,16 +61,18 @@ int main() {
 
     // WAV section chunk
     const int wavSectionChunkByteSize = 4;
-    char wavSectionChunkBytes[wavSectionChunkByteSize + 1];
+    char wavSectionChunkBytes[wavSectionChunkByteSize];
     mp3File.read(wavSectionChunkBytes, wavSectionChunkByteSize);
-    wavSectionChunkBytes[wavSectionChunkByteSize] = '\0';
     int wavSectionValue;
-    for(char byte : wavSectionChunkBytes) {
-        if(byte == '\0') continue;
-        // perform bitmasking to only use lower 8 bits and use
+    for(int i = 0; i < wavSectionChunkByteSize; ++i) {
         // OR operator to add the resulting bits
-        wavSectionValue = (wavSectionValue << 8) | (byte & 0xFF);
+        wavSectionValue |= ((unsigned char)wavSectionChunkBytes[i] << (i * 8));
     }
+
+    // WAV type format, PCM = 1, others = some form of compression
+    const int wavTypeFormatByteSize = 2;
+    char wavTypeFormatBytes[wavTypeFormatByteSize + 1];
+    // mp3
 
      // Close the file
     mp3File.close();
