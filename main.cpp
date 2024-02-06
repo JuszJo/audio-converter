@@ -4,12 +4,13 @@
 
 // TODO: Make MP3 to WAV file converter
 
-char byteToBinary(char byte) {
-    std::cout << "Byte to convert: " << byte << std::endl;
+template <typename T>
+
+char byteToBinary(T byte) {
     char binary[9];
 
     for (int i = 7; i >= 0; --i) {
-        binary[7 - i] += ((byte >> i) & 1) ? '1' : '0';
+        binary[7 - i] = ((byte >> i) & 1) ? '1' : '0';
     }
 
     binary[8] = '\0';
@@ -17,19 +18,6 @@ char byteToBinary(char byte) {
     std::cout << "Binary: " << binary << std::endl;
 
     return *binary;
-}
-
-void intToBinary(int value) {
-    std::cout << "Byte to convert: " << value << std::endl;
-    char binary[9];
-
-    for (int i = 7; i >= 0; --i) {
-        binary[7 - i] += ((value >> i) & 1) ? '1' : '0';
-    }
-
-    binary[8] = '\0';
-
-    std::cout << "Binary: " << binary << std::endl;
 }
 
 int main() {
