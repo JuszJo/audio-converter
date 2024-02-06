@@ -105,6 +105,12 @@ int main() {
     mp3File.read(blockBytes, blockByteSize);
     int blockAlignValue = LittleEndian::byteToInteger(blockBytes, blockByteSize);
 
+    // Bits per sample
+    const int bitSampleByteSize = 2;
+    char bitSampleBytes[bitSampleByteSize];
+    mp3File.read(bitSampleBytes, bitSampleByteSize);
+    int bitsPerSampleValue = LittleEndian::byteToInteger(bitSampleBytes, bitSampleByteSize);
+
     // Close the file
     mp3File.close();
 
@@ -118,6 +124,7 @@ int main() {
     std::cout << "Sample Frequency Value: " << sampleFreq << std::endl;
     std::cout << "Byte Rate Value: " << byteRateValue << std::endl;
     std::cout << "Block Alignment Value: " << blockAlignValue << std::endl;
+    std::cout << "Bits Per Sample Value: " << bitsPerSampleValue << std::endl;
 
     return 1;
 }
