@@ -111,6 +111,21 @@ int main() {
     mp3File.read(bitSampleBytes, bitSampleByteSize);
     int bitsPerSampleValue = LittleEndian::byteToInteger(bitSampleBytes, bitSampleByteSize);
 
+    // Skip next 34 bytes (ADLT)
+    mp3File.seekg(34, std::ios::cur);
+
+    // Data description header
+    const int dataDescByteSize = 4;
+    char dataDescBytes[dataDescByteSize + 1];
+    mp3File.read(dataDescBytes, dataDescByteSize);
+    dataDescBytes[dataDescByteSize] = '\0';
+
+    // Data Size
+    const int dataByteSize = 4;
+    char dataBytes[dataByteSize];
+    mp3File.read(dataBytes, dataByteSize);
+    int dataSizeValue = LittleEndian::byteToInteger(dataBytes, dataByteSize);
+
     // Close the file
     mp3File.close();
 
@@ -125,6 +140,8 @@ int main() {
     std::cout << "Byte Rate Value: " << byteRateValue << std::endl;
     std::cout << "Block Alignment Value: " << blockAlignValue << std::endl;
     std::cout << "Bits Per Sample Value: " << bitsPerSampleValue << std::endl;
+    std::cout << "Data Description Bytes: " << dataDescBytes << std::endl;
+    std::cout << "Data Size Bytes: " << dataSizeValue << std::endl;
 
     return 1;
 }
