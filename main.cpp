@@ -20,6 +20,18 @@ char byteToBinary(T byte) {
     return *binary;
 }
 
+namespace LittleEndian {
+    int byteToInteger(char bytes[], int size) {
+        int value;
+
+        for(int i = 0; i < size; ++i) {
+            value |= (unsigned char)bytes[i] << (i * 8);
+        }
+
+        return value;
+    }
+}
+
 int main() {
     // const wchar_t* audioName = L"Boa.mp3";
     const wchar_t* audioName = L"Duvet.wav";
@@ -41,11 +53,8 @@ int main() {
     // LESS
     const int lessByteSize = 4;
     char buffer[lessByteSize];
-    int lessBytes;
     mp3File.read(buffer, lessByteSize);
-    for(int i = 0; i < lessByteSize; ++i) {
-        lessBytes |= ((unsigned char)buffer[i] << (i * 8));
-    }
+    int lessBytes = LittleEndian::byteToInteger(buffer, lessByteSize);
 
     // WAV
     const int wavByteSize = 4;
@@ -63,20 +72,20 @@ int main() {
     const int wavSectionChunkByteSize = 4;
     char wavSectionChunkBytes[wavSectionChunkByteSize];
     mp3File.read(wavSectionChunkBytes, wavSectionChunkByteSize);
-    int wavSectionValue;
-    for(int i = 0; i < wavSectionChunkByteSize; ++i) {
-        // OR operator to add the resulting bits
-        wavSectionValue |= ((unsigned char)wavSectionChunkBytes[i]) << (i * 8);
-    }
+    int wavSectionValue = LittleEndian::byteToInteger(wavSectionChunkBytes, wavSectionChunkByteSize);
 
     // WAV type format, PCM = 1, others = some form of compression
     const int wavTypeFormatByteSize = 2;
     char wavTypeFormatBytes[wavTypeFormatByteSize];
     mp3File.read(wavTypeFormatBytes, wavTypeFormatByteSize);
-    int wavTypeFormatValue;
-    for(int i = 0; i < wavTypeFormatByteSize; ++i) {
-        wavTypeFormatValue |= ((unsigned char)wavTypeFormatBytes[i]) << (i * 8);
-    }
+    int wavTypeFormatValue = LittleEndian::byteToInteger(wavTypeFormatBytes, wavTypeFormatByteSize);
+
+    // Number of channels
+    // 0x01 for mono, 0x02 for stereo
+    const int channelsByteSize = 2;
+    char channelsBytes[channelsByteSize];
+    mp3File.read(channelsBytes, channelsByteSize);
+    int channelValue = LittleEndian::byteToInteger(channelsBytes, channelsByteSize);
 
     // Close the file
     mp3File.close();
@@ -87,6 +96,7 @@ int main() {
     std::cout << "FMT Bytes: " << fmtBytes << std::endl;
     std::cout << "WAV Section Chunk Bytes: " << wavSectionValue << std::endl;
     std::cout << "WAV Type Format Bytes: " << wavTypeFormatValue << std::endl;
+    std::cout << "Channel Value: " << channelValue << std::endl;
 
     return 1;
 }
