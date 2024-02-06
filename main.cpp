@@ -66,15 +66,19 @@ int main() {
     int wavSectionValue;
     for(int i = 0; i < wavSectionChunkByteSize; ++i) {
         // OR operator to add the resulting bits
-        wavSectionValue |= ((unsigned char)wavSectionChunkBytes[i] << (i * 8));
+        wavSectionValue |= ((unsigned char)wavSectionChunkBytes[i]) << (i * 8);
     }
 
     // WAV type format, PCM = 1, others = some form of compression
     const int wavTypeFormatByteSize = 2;
-    char wavTypeFormatBytes[wavTypeFormatByteSize + 1];
-    // mp3
+    char wavTypeFormatBytes[wavTypeFormatByteSize];
+    mp3File.read(wavTypeFormatBytes, wavTypeFormatByteSize);
+    int wavTypeFormatValue;
+    for(int i = 0; i < wavTypeFormatByteSize; ++i) {
+        wavTypeFormatValue |= ((unsigned char)wavTypeFormatBytes[i]) << (i * 8);
+    }
 
-     // Close the file
+    // Close the file
     mp3File.close();
 
     std::cout << "RIFF Bytes: " << riffBytes << std::endl;
@@ -82,6 +86,7 @@ int main() {
     std::cout << "WAV Bytes: " << wavBytes << std::endl;
     std::cout << "FMT Bytes: " << fmtBytes << std::endl;
     std::cout << "WAV Section Chunk Bytes: " << wavSectionValue << std::endl;
+    std::cout << "WAV Type Format Bytes: " << wavTypeFormatValue << std::endl;
 
     return 1;
 }
