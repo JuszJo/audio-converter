@@ -32,6 +32,12 @@ namespace LittleEndian {
     }
 }
 
+int parseHeaders(const int byteSize, std::ifstream& file) {
+    char buffer[byteSize];
+    file.read(buffer, byteSize);
+    return LittleEndian::byteToInteger(buffer, byteSize);
+}
+
 int main() {
     // const wchar_t* audioName = L"Boa.mp3";
     const wchar_t* audioName = L"Duvet.wav";
@@ -52,9 +58,7 @@ int main() {
 
     // LESS
     const int lessByteSize = 4;
-    char buffer[lessByteSize];
-    mp3File.read(buffer, lessByteSize);
-    int lessBytes = LittleEndian::byteToInteger(buffer, lessByteSize);
+    int lessBytes = parseHeaders(lessByteSize, mp3File);
 
     // WAV
     const int wavByteSize = 4;
@@ -70,46 +74,32 @@ int main() {
 
     // WAV section chunk
     const int wavSectionChunkByteSize = 4;
-    char wavSectionChunkBytes[wavSectionChunkByteSize];
-    mp3File.read(wavSectionChunkBytes, wavSectionChunkByteSize);
-    int wavSectionValue = LittleEndian::byteToInteger(wavSectionChunkBytes, wavSectionChunkByteSize);
+    int wavSectionValue = parseHeaders(wavSectionChunkByteSize, mp3File);
 
     // WAV type format, PCM = 1, others = some form of compression
     const int wavTypeFormatByteSize = 2;
-    char wavTypeFormatBytes[wavTypeFormatByteSize];
-    mp3File.read(wavTypeFormatBytes, wavTypeFormatByteSize);
-    int wavTypeFormatValue = LittleEndian::byteToInteger(wavTypeFormatBytes, wavTypeFormatByteSize);
+    int wavTypeFormatValue = parseHeaders(wavTypeFormatByteSize, mp3File);
 
     // Number of channels
     // 0x01 for mono, 0x02 for stereo
     const int channelsByteSize = 2;
-    char channelsBytes[channelsByteSize];
-    mp3File.read(channelsBytes, channelsByteSize);
-    int channelValue = LittleEndian::byteToInteger(channelsBytes, channelsByteSize);
+    int channelValue = parseHeaders(channelsByteSize, mp3File);
 
     // Sample Frequency (Hertz)
     const int sampleFreqByteSize = 4;
-    char sampleFreqBytes[sampleFreqByteSize];
-    mp3File.read(sampleFreqBytes, sampleFreqByteSize);
-    int sampleFreq = LittleEndian::byteToInteger(sampleFreqBytes, sampleFreqByteSize);
+    int sampleFreq = parseHeaders(sampleFreqByteSize, mp3File);
 
     // Byte Rate
     const int rateSize = 4;
-    char rateBytes[rateSize];
-    mp3File.read(rateBytes, rateSize);
-    int byteRateValue = LittleEndian::byteToInteger(rateBytes, rateSize);
+    int byteRateValue = parseHeaders(rateSize, mp3File);
 
     // Block alignment
     const int blockByteSize = 2;
-    char blockBytes[blockByteSize];
-    mp3File.read(blockBytes, blockByteSize);
-    int blockAlignValue = LittleEndian::byteToInteger(blockBytes, blockByteSize);
+    int blockAlignValue = parseHeaders(blockByteSize, mp3File);
 
     // Bits per sample
     const int bitSampleByteSize = 2;
-    char bitSampleBytes[bitSampleByteSize];
-    mp3File.read(bitSampleBytes, bitSampleByteSize);
-    int bitsPerSampleValue = LittleEndian::byteToInteger(bitSampleBytes, bitSampleByteSize);
+    int bitsPerSampleValue = parseHeaders(bitSampleByteSize, mp3File);
 
     // Skip next 34 bytes (ADLT)
     mp3File.seekg(34, std::ios::cur);
@@ -122,9 +112,7 @@ int main() {
 
     // Data Size
     const int dataByteSize = 4;
-    char dataBytes[dataByteSize];
-    mp3File.read(dataBytes, dataByteSize);
-    int dataSizeValue = LittleEndian::byteToInteger(dataBytes, dataByteSize);
+    int dataSizeValue = parseHeaders(dataByteSize, mp3File);
 
     // Close the file
     mp3File.close();
