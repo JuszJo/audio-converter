@@ -33,9 +33,11 @@ namespace LittleEndian {
 }
 
 int parseHeaders(const int byteSize, std::ifstream& file) {
-    char buffer[byteSize];
-    file.read(buffer, byteSize);
-    return LittleEndian::byteToInteger(buffer, byteSize);
+    char* buffer = new char[byteSize];
+    char newBuffer = *buffer;
+    delete[] buffer;
+    file.read(&newBuffer, byteSize);
+    return LittleEndian::byteToInteger(&newBuffer, byteSize);
 }
 
 int main() {
