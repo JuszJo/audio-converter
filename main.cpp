@@ -40,6 +40,62 @@ int parseHeaders(const int byteSize, std::ifstream& file) {
     return LittleEndian::byteToInteger(&newBuffer, byteSize);
 }
 
+void writeToFile(const char* fileName, char* bytes, int size) {
+    std::ofstream file(fileName, std::ios::binary);
+
+    if(!file.is_open()) {
+        std::cerr << "Error: Could not open the MP3 file." << std::endl;
+    }
+    else {
+        file.write(bytes, size);
+
+        file.close();
+    }
+}
+
+template <typename T>
+
+bool checkSequence(T byte, int value, int index) {
+    bool isValue = true;
+    int count = 0;
+
+    for(int i = index; i >= 0; --i) {
+        if(((byte >> i) & 1) == 0) {
+            isValue = false;
+
+            break;
+        }
+        
+        ++count;
+    }
+
+    if(count < 2) return false;
+
+    return isValue;
+}
+
+template <typename T>
+
+bool findFrameSync(T byte, int index) {
+    bool result = false;
+    for(int i = 7; i >= 0; --i) {
+        if(((byte >> i) & 1) == 1) {
+            if(checkSequence(byte, 1, i)) {
+                std::cout << "Byte Index: " << index << std::endl;
+
+                result = true;
+
+                break;
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    return result;
+}
+
 int main() {
     // const wchar_t* audioName = L"Boa.mp3";
     const wchar_t* audioName = L"Duvet.wav";
@@ -119,7 +175,7 @@ int main() {
     // Close the file
     mp3File.close();
 
-    std::cout << "RIFF Bytes: " << riffBytes << std::endl;
+    /* std::cout << "RIFF Bytes: " << riffBytes << std::endl;
     std::cout << "LESS Bytes: " << lessBytes << std::endl;
     std::cout << "WAV Bytes: " << wavBytes << std::endl;
     std::cout << "FMT Bytes: " << fmtBytes << std::endl;
@@ -131,7 +187,38 @@ int main() {
     std::cout << "Block Alignment Value: " << blockAlignValue << std::endl;
     std::cout << "Bits Per Sample Value: " << bitsPerSampleValue << std::endl;
     std::cout << "Data Description Bytes: " << dataDescBytes << std::endl;
-    std::cout << "Data Size Bytes: " << dataSizeValue << std::endl;
+    std::cout << "Data Size Bytes: " << dataSizeValue << std::endl; */
+
+    // MP3
+    const wchar_t* fileName = L"Boa.mp3";
+
+    // open the mp3 file in binary mode
+    std::ifstream audioFile(fileName, std::ios::binary);
+
+    if(!audioFile.is_open()) {
+        std::cerr << "Error: Could not open the MP3 file." << std::endl;
+        return 1;
+    }
+
+    const int headerByteSize = 2000;
+    // const int headerByteSize = 2;
+    char audioBuffer[headerByteSize];
+    // Frame sync pattern (11bits, 0xFFF) beginning of an MP3 frame
+    audioFile.seekg(2000, std::ios::cur);
+    // audioFile.seekg(1543, std::ios::cur);
+    audioFile.read(audioBuffer, headerByteSize);
+
+    for(int i = 0; i < headerByteSize; ++i) {
+        // byteToBinary(audioBuffer[i]);
+        if(findFrameSync(audioBuffer[i], i + 2000) && i > 0) {
+            byteToBinary(audioBuffer[i - 1]);
+            byteToBinary(audioBuffer[i]);
+            byteToBinary(audioBuffer[i + 1]);
+        }
+    }
+
+    // writeToFile("test3.mp3", audioBuffer, headerByteSize);
+    // std::cout << "Text: " << audioBuffer << std::endl;
 
     return 1;
 }
