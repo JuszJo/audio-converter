@@ -65,7 +65,7 @@ bool checkSequence(T byte, int value, int index) {
 
             break;
         }
-        
+
         ++count;
     }
 
@@ -191,6 +191,7 @@ int main() {
 
     // MP3
     const wchar_t* fileName = L"Boa.mp3";
+    // const wchar_t* fileName = L"train.mp3";
 
     // open the mp3 file in binary mode
     std::ifstream audioFile(fileName, std::ios::binary);
@@ -200,24 +201,42 @@ int main() {
         return 1;
     }
 
-    const int headerByteSize = 2000;
+    const int headerByteSize = 5000;
     // const int headerByteSize = 2;
     char audioBuffer[headerByteSize];
     // Frame sync pattern (11bits, 0xFFF) beginning of an MP3 frame
-    audioFile.seekg(2000, std::ios::cur);
+    // audioFile.seekg(2000, std::ios::cur);
     // audioFile.seekg(1543, std::ios::cur);
     audioFile.read(audioBuffer, headerByteSize);
 
+    // int pointer = 745;
+
+    // for(int i = 0; i < 5; ++i) {
+    //     byteToBinary(audioBuffer[pointer++]);
+    // }
+
+    const int textSize = 1;
+    char final[textSize];
+    int charIndex = 0;
+
     for(int i = 0; i < headerByteSize; ++i) {
         // byteToBinary(audioBuffer[i]);
-        if(findFrameSync(audioBuffer[i], i + 2000) && i > 0) {
+        if(findFrameSync(audioBuffer[i], i) && i > 0) {
             byteToBinary(audioBuffer[i - 1]);
             byteToBinary(audioBuffer[i]);
             byteToBinary(audioBuffer[i + 1]);
+            byteToBinary(audioBuffer[i + 2]);
+            /* final[charIndex++] = byteToBinary(audioBuffer[i - 1]);
+            final[charIndex++] = byteToBinary(audioBuffer[i]);
+            final[charIndex++] = byteToBinary(audioBuffer[i + 1]);
+            final[charIndex++] = byteToBinary(audioBuffer[i + 2]);
+            final[charIndex++] = '\r'; */
+            
         }
     }
 
     // writeToFile("test3.mp3", audioBuffer, headerByteSize);
+    // writeToFile("test3.txt", final, textSize);
     // std::cout << "Text: " << audioBuffer << std::endl;
 
     return 1;
